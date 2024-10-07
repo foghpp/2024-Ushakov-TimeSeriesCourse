@@ -17,7 +17,11 @@ def ED_distance(ts1: np.ndarray, ts2: np.ndarray) -> float:
     
     ed_dist = 0
 
-    # INSERT YOUR CODE
+    ed_dist = np.sqrt(
+        np.sum(
+            (ts1 - ts2) ** 2
+        )
+    )
 
     return ed_dist
 
@@ -38,7 +42,18 @@ def norm_ED_distance(ts1: np.ndarray, ts2: np.ndarray) -> float:
 
     norm_ed_dist = 0
 
-    # INSERT YOUR CODE
+    n = len(ts1)
+
+    norm_ed_dist = np.sqrt(
+        np.abs(
+            2 * n * (
+                1 - (
+                    (np.dot(ts1, ts2) - n * np.mean(ts1) * np.mean(ts2))
+                    / (n * np.std(ts1) * np.std(ts2))
+                )
+            )
+        )
+    )
 
     return norm_ed_dist
 
@@ -60,6 +75,28 @@ def DTW_distance(ts1: np.ndarray, ts2: np.ndarray, r: float = 1) -> float:
 
     dtw_dist = 0
 
-    # INSERT YOUR CODE
+    n = len(ts1)
+
+    d = np.zeros((n + 1, n + 1))
+
+    for i in range(n + 1):
+        for j in range(n + 1):
+            if i == 0 and j == 0:
+                d[i, j] = 0
+
+            elif i == 0 or j == 0:
+                d[i, j] = np.inf
+
+            else:
+                d[i, j] = (
+                    (ts1[i - 1] - ts2[j - 1]) ** 2
+                    + min(
+                        d[i - 1, j],
+                        d[i, j - 1],
+                        d[i - 1, j - 1]
+                    )
+                )
+
+    dtw_dist = d[n, n]
 
     return dtw_dist
