@@ -79,12 +79,17 @@ def DTW_distance(ts1: np.ndarray, ts2: np.ndarray, r: float = 1) -> float:
 
     d = np.zeros((n + 1, n + 1))
 
+    r = np.floor(r * n)
+
     for i in range(n + 1):
         for j in range(n + 1):
             if i == 0 and j == 0:
                 d[i, j] = 0
 
             elif i == 0 or j == 0:
+                d[i, j] = np.inf
+
+            elif not j - r <= i <= j + r:
                 d[i, j] = np.inf
 
             else:
