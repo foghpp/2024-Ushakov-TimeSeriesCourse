@@ -11,7 +11,7 @@ import plotly.express as px
 plotly.offline.init_notebook_mode(connected=True)
 
 
-def plot_ts(ts: np.ndarrray, title: str = 'Input Time Series') -> None:
+def plot_ts(ts: np.ndarray, title: str = 'Input Time Series') -> None:
     """
     Plot the time series
 
@@ -48,11 +48,10 @@ def plot_ts(ts: np.ndarrray, title: str = 'Input Time Series') -> None:
     fig.update_layout(title=title,
                       title_font=dict(size=24, color='black'),
                       plot_bgcolor="rgba(0,0,0,0)",
-                      paper_bgcolor='rgba(0,0,0,0)',
                       legend=dict(font=dict(size=20, color='black'))
                       )
 
-    fig.show(renderer="colab")
+    fig.show()
 
 
 
@@ -130,10 +129,9 @@ def plot_motifs(mp: dict, top_k_motifs: dict) -> None:
 
     fig.update_layout(title_font=dict(size=24, color='black'),
                       plot_bgcolor='rgba(0,0,0,0)',
-                      paper_bgcolor='rgba(0,0,0,0)', 
                       height=1300)
 
-    fig.show(renderer="colab")
+    fig.show()
 
 
 def plot_discords(mp: dict, top_k_discords: dict) -> None:
@@ -188,9 +186,9 @@ def plot_discords(mp: dict, top_k_discords: dict) -> None:
 
     fig.update_layout(title_font=dict(size=24, color='black'),
                       plot_bgcolor="rgba(0,0,0,0)",
-                      paper_bgcolor='rgba(0,0,0,0)')
+                      )
 
-    fig.show(renderer="colab")
+    fig.show()
 
 
 def plot_segmentation(mp: dict, threshold: float) -> None:
