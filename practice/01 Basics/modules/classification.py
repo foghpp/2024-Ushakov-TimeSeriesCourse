@@ -1,3 +1,5 @@
+from typing import Self
+
 import numpy as np
 
 from modules.metrics import *
@@ -65,7 +67,16 @@ class TimeSeriesKNN:
 
         dist = 0
 
-        # INSERT YOUR CODE
+        if self.metric == 'euclidean':
+            if self.metric_params['normalize']:
+                dist = norm_ED_distance(x_train, x_test)
+            else:
+                dist = ED_distance(x_train, x_test)
+        elif self.metric == 'dtw':
+            if self.metric_params['normalize']:
+                x_train = z_normalize(x_train.copy())
+                x_test = z_normalize(x_test.copy())
+            dist = DTW_distance(x_train, x_test, self.metric_params['r'])
 
         return dist
 
@@ -85,7 +96,11 @@ class TimeSeriesKNN:
 
         neighbors = []
 
-        # INSERT YOUR CODE
+        dists = [self._distance(x_train, x_test) for x_train in self.X_train]
+
+        neighbors_idx = np.argsort(dists)[:self.n_neighbors]
+        neighbors = self.Y_train[neighbors_idx]
+        neighbors = np.bincount(neighbors).argmax()
 
         return neighbors
 
@@ -105,7 +120,7 @@ class TimeSeriesKNN:
 
         y_pred = []
 
-        # INSERT YOUR CODE
+        y_pred.extend([self._find_neighbors(x_test) for x_test in X_test])
 
         return np.array(y_pred)
 
