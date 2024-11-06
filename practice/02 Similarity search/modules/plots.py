@@ -218,4 +218,4 @@ def pie_chart(labels: np.ndarray, values: np.ndarray, plot_title='Pie chart') ->
                       height=500
                       )
 
-    fig.show(renderer="colab")
+    fig.show()

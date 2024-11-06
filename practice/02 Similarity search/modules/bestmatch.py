@@ -213,7 +213,7 @@ class UCR_DTW(BestMatchFinder):
 
         lb_Kim = 0
         
-        # INSERT YOUR CODE
+        lb_Kim = (subs1[0] - subs2[0])**2 + (subs1[-1] - subs2[-1])**2
 
         return lb_Kim
 
@@ -235,7 +235,16 @@ class UCR_DTW(BestMatchFinder):
 
         lb_Keogh = 0
 
-        # INSERT YOUR CODE
+        r = int(r * len(subs1))
+
+        for i in range(len(subs1)):
+            l = min(subs1[max(0, i-r) : min(len(subs1), i+r+1)])
+            u = max(subs1[max(0, i-r) : min(len(subs1), i+r+1)])
+
+            if subs2[i] > u:
+                lb_Keogh += (subs2[i] - u)**2
+            elif subs2[i] < l:
+                lb_Keogh += (subs2[i] - l)**2
 
         return lb_Keogh
 
@@ -289,6 +298,28 @@ class UCR_DTW(BestMatchFinder):
             'distance' : []
         }
 
-        # INSERT YOUR CODE
+        if self.is_normalize:
+            query = z_normalize(query)
+        for i in range(N - m + 1):
+            if self.is_normalize:
+                ts_data[i] = z_normalize(ts_data[i])
+
+            LB_KimFL = self._LB_Kim(query, ts_data[i])
+            if LB_KimFL < bsf:
+                self.lb_Kim_num += 1
+                LB_KeoghEQ = self._LB_Keogh(query, ts_data[i], self.r)
+                if LB_KeoghEQ < bsf:
+                    self.lb_KeoghQC_num += 1
+                    LB_KeoghEC = self._LB_Keogh(ts_data[i], query, self.r)
+                    if LB_KeoghEC < bsf:
+                        self.lb_KeoghCQ_num += 1
+                        dist = DTW_distance(query, ts_data[i], self.r)
+                        if dist < bsf:
+                            dist_profile[i] = dist
+                            bestmatch = topK_match(dist_profile, excl_zone, self.topK, bsf)
+                            if len(bestmatch['indices']) == self.topK:
+                                bsf = max(bestmatch['distances'])
+            else:
+                self.not_pruned_num += 1
 
         return bestmatch

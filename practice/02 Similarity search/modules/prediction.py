@@ -84,6 +84,19 @@ class BestMatchPredictor:
 
         predict_values = np.zeros((self.h,))
 
-        # INSERT YOUR CODE
-        
+        if self.match_alg == 'UCR-DTW':
+            bmf = UCR_DTW(**self.match_alg_params)
+            dist = bmf.perform(ts, query)['distances']
+        elif self.match_alg == 'MASS':
+            dist = mts.mass2(ts, query)
+
+        excl_zone = math.ceil(len(query) * self.match_alg_params['excl_zone_frac'])
+        topK_subs = topK_match(dist, excl_zone, self.match_alg_params['topK'], self.h)['indices']
+
+        topK_subs_predict_values = np.zeros((len(topK_subs), self.h))
+        for i, topK_sub in enumerate(topK_subs):
+            topK_subs_predict_values[i] = ts[topK_sub : topK_sub+self.h]
+
+        predict_values = self._calculate_predict_values(topK_subs_predict_values)
+
         return predict_values
