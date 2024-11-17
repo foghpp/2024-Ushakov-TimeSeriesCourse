@@ -54,10 +54,39 @@ def meter_swapping_detection(heads: dict, tails: dict, house_idx: dict, m: int) 
 
     eps = 0.001
 
-    min_score = {}
+    min_score = {
+        'i': None,
+        'j': None,
+        'mp_j': np.inf,
+    }
 
-    # INSERT YOUR CODE
-    
+    swap_scores = np.zeros((len(heads), len(tails)))
+
+    for i in range(len(house_idx)):
+        for j in range(len(house_idx)):
+            if i == j:
+                continue
+
+            Hi = heads[f'H_{house_idx[i]}'].values.flatten()
+            Ti = tails[f'T_{house_idx[i]}'].values.flatten()
+            Tj = tails[f'T_{house_idx[j]}'].values.flatten()
+
+            numerator = np.min(compute_mp(ts1=Hi, ts2=Tj, m=m)['mp'])
+            denominator = np.min(compute_mp(ts1=Hi, ts2=Ti, m=m)['mp']) + eps
+            mp_j = numerator / denominator
+
+            swap_scores[i, j] = mp_j
+
+    for i in range(len(house_idx)):
+        for j in range(len(house_idx)):
+            if i == j:
+                continue
+
+            if swap_scores[i, j] < min_score['mp_j'] or min_score['mp_j'] is None:
+                min_score['i'] = i
+                min_score['j'] = j
+                min_score['mp_j'] = swap_scores[i, j]
+
     return min_score
 
 
@@ -104,9 +133,8 @@ def plot_consumptions_ts(consumptions: dict, cutoff, house_idx: list):
                       title_x=0.5,
                       title_font=dict(size=26, color='black'),
                       plot_bgcolor="rgba(0,0,0,0)",
-                      paper_bgcolor='rgba(0,0,0,0)', 
                       height=800,
                       legend=dict(font=dict(size=20, color='black'))
                       )
 
-    fig.show(renderer="colab")
+    fig.show()
